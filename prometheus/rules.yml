@@ -1,0 +1,20 @@
+groups:
+  - name: app-alerts
+    rules:
+      - alert: AppDown
+        expr: up{job="flask_app"} == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Flask app ngừng phản hồi"
+
+      - alert: HighErrorRate
+        expr: >
+          sum(rate(app_requests_total{status=~"5.."}[1m]))
+          / sum(rate(app_requests_total[1m])) > 0.2
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Hơn 20% request bị lỗi 5xx"
